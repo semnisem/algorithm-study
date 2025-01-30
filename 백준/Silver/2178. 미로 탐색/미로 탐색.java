@@ -26,22 +26,21 @@ public class Main {
         queue.add(new Point(0,0,1)); // x,y, dist
         visited[0][0]=true;
 
-        while (!queue.isEmpty()) {
-            Point p = queue.poll();
-            int x = p.x, y = p.y, dist=p.dist;
+        while (!queue.isEmpty()) { // 예약리스트가 차있는 동안 계속 반복 (목적지에 빨리=짧게 도달이 목표)
+            Point p = queue.poll(); // 리스트에서 하나 꺼내고
+            int x = p.x, y = p.y, dist=p.dist; // 해당 점의 정보 확인
             // System.out.printf("visit %d, %d -- 거리: %d\n", x, y, dist);
 
-            if (x==N-1 && y==M-1) {
-                min_dist=dist; // bfs에서 먼저 도착 = 최소 거리
+            if (x==N-1 && y==M-1) { // bfs에서 먼저 도착 = 최소 거리
+                min_dist=dist;
                 break;
             }
-
-            for (int i=0; i<4; i++) {
+            for (int i=0; i<4; i++) { // 그게 아니면 사방 탐색
                 int nx = x + dx[i];
                 int ny = y + dy[i];
-                if (nx<N && nx>=0 && ny<M && ny>=0 && !visited[nx][ny] && grid[nx][ny]==1){
-                    visited[nx][ny]=true;
-                    queue.add(new Point(nx, ny, dist+1));
+                if (nx<N && nx>=0 && ny<M && ny>=0 && !visited[nx][ny] && grid[nx][ny]==1){ // 다음 방문지로 적합한지
+                    visited[nx][ny]=true; // 방문 미리 해두고 (큐에서 꺼내서 방문하면 중복될 수도..!)
+                    queue.add(new Point(nx, ny, dist+1)); // 다음방문지에 추가하기
                 }
             }
         }

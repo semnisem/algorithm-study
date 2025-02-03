@@ -6,38 +6,33 @@ public class Main {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        StringTokenizer st = null;
+        StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        String a_str = st.nextToken();
-        String b_str = st.nextToken();
+        String a = st.nextToken();
+        String b = st.nextToken();
 
-        int cnt = 0;
-        if (a_str.length()==b_str.length()){
-            // O(n)으로 차이 카운트
-            for (int i = 0; i < a_str.length(); i++) {
-                if (a_str.charAt(i)!=b_str.charAt(i)){
-                    cnt++;
-                }
-            }
-
-        } else { // a의 길이 <= b의 길이 0~1 1~2 2~3
-            // a_str을 window로 best match 찾기
-            int min_mismatch = a_str.length();
-            for (int i = 0; i <= b_str.length()-a_str.length(); i++) {
-                int mismatch = 0;
-                for (int j = 0; j < a_str.length(); j++) {
-                    if (a_str.charAt(j)!=b_str.charAt(i+j)){
-                        mismatch++;
-                    }
-                }
-                min_mismatch = Math.min(min_mismatch, mismatch);
-            }
-            cnt = min_mismatch;
-        }
-        sb.append(cnt);
+        int result;
+        result = slidingWindow(a, b);
+        sb.append(result);
         System.out.println(sb);
 
+    }
+
+    public static int slidingWindow(String a_str, String b_str) {
+        int minDiff = Integer.MAX_VALUE;
+
+        // O((n-m)*m) 시간복잡도
+        for (int start = 0; start <= b_str.length() - a_str.length(); start++) {
+            int diff = 0;
+            for (int i = 0; i < a_str.length(); i++) {
+                if (a_str.charAt(i) != b_str.charAt(start+i)) {
+                    diff++;
+                }
+            }
+            minDiff = Math.min(minDiff, diff);
+        }
+        return minDiff;
     }
 
 }

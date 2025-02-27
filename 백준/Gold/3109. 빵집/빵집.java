@@ -12,7 +12,7 @@ public class Main {
 		// System.out.println("x:"+x+" y:"+y);
 		if(x==C-1) { // 도착 - 성공
 			// System.out.println("true");
-			found=true;
+			// found=true;
 			maxPipe++;
 			return true;
 		}
@@ -21,9 +21,9 @@ public class Main {
 			int nx=x+1;
 			int ny=y+dy[d];
 			if(ny>=0 && ny<R && nx<C && map[ny][nx]==0) {
-				if(!found) {
-					map[ny][nx]=1;
-					if(dfs(nx, ny))
+				// if(found) continue;
+				map[ny][nx]=1;
+				if(dfs(nx, ny)) {
 					return true;
 				}
 					

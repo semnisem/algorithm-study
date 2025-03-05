@@ -6,13 +6,11 @@ public class Main {
 	static int R, C, maxPipe;
 	static int[] dy = new int[]{-1, 0, 1}; // 앞, 위대각선, 아래대각선
 	static int[][] map;
-	static boolean found;
 	
 	public static boolean dfs(int x, int y) {
 		// System.out.println("x:"+x+" y:"+y);
 		if(x==C-1) { // 도착 - 성공
-			// System.out.println("true");
-			// found=true;
+			// System.out.println("도착");
 			maxPipe++;
 			return true;
 		}
@@ -21,7 +19,6 @@ public class Main {
 			int nx=x+1;
 			int ny=y+dy[d];
 			if(ny>=0 && ny<R && nx<C && map[ny][nx]==0) {
-				// if(found) continue;
 				map[ny][nx]=1;
 				if(dfs(nx, ny)) {
 					return true;
@@ -54,7 +51,6 @@ public class Main {
 		maxPipe=0;
 		for(int start_y=0; start_y<R; start_y++) {
 			// System.out.println(Arrays.deepToString(map));
-			found=false;
 			map[start_y][0]=1;
 			dfs(0, start_y);
 		}

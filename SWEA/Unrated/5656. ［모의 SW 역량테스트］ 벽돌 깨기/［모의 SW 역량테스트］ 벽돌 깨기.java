@@ -1,26 +1,11 @@
 import java.io.*;
 import java.util.*;
 
-public class Solution{
+public class Solution {
 	
-	static int N, W, H, max_removed=0;
+	static int N, W, H;
 	static int[] dr = {-1,1,0,0}, dc= {0,0,-1,1};
 	static int[][][] grids;
-	static int[][] org;
-	static ArrayList<int[]> arr_list;
-	
-	static void permutate(int cnt, int[] arr) {
-		if(cnt==N) {
-			int[] a = arr.clone();
-			arr_list.add(a);
-			return;
-		}
-		
-		for(int i=0; i<W; i++) {
-			arr[cnt]=i;
-			permutate(cnt+1, arr);
-		}
-	}
 	
 	static int shoot(int layer, int r, int c, int removed) {
 		int power = grids[layer][r][c];
@@ -38,6 +23,18 @@ public class Solution{
 		return removed;
 	}
 	
+	static void fall(int i) {
+		for(int c=0; c<W; c++) { // 폭발 후 fall
+			int id = H-1;
+			for(int r= H-1; r>=0; r--) {
+				if(grids[i][r][c]!=0) {
+					grids[i][id][c]=grids[i][r][c];
+					if(r!=id) grids[i][r][c]=0;
+					id--;
+				}
+			}
+		}
+	}
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = null;
@@ -51,62 +48,45 @@ public class Solution{
 			W = Integer.parseInt(st.nextToken());
 			H = Integer.parseInt(st.nextToken());
 			
-			org = new int[H][W];
 			grids = new int[N+1][H][W];
 			int total_brick=0;
-			
 			for(int i=0; i<H; i++) {
 				st = new StringTokenizer(br.readLine());
 				for(int j=0; j<W; j++) {
-					org[i][j]=Integer.parseInt(st.nextToken());
-					if(org[i][j]!=0) total_brick++;
+					grids[0][i][j]=Integer.parseInt(st.nextToken());
+					if(grids[0][i][j]!=0) total_brick++;
 				}
 			}
 			
-			// permute
-			arr_list = new ArrayList<>();
-			permutate(0, new int[N]);
 			
-			// shoot & fall
-			int max_removed = 0;
-			for(int[] shoot_list: arr_list) {
-				for (int y = 0; y < H; y++) {
-			        System.arraycopy(org[y], 0, grids[0][y], 0, W);
-			    }
-				int removed=0;
-				
-				for(int i=0; i<N; i++) {
-					for (int y = 0; y < H; y++) {
-			            System.arraycopy(grids[i][y], 0, grids[i + 1][y], 0, W);
-			        }
-					int col = shoot_list[i];
-					int row = 0;
-					while(row<H && grids[i+1][row][col]==0) row++;
-					if(row>=H) continue;
-					
-					removed+=shoot(i+1, row, col, 0); // 폭발
-					for(int c=0; c<W; c++) { // 폭발 후 fall
-						ArrayDeque<Integer> stack = new ArrayDeque<Integer>();
-						for(int r=0; r<H; r++) {
-							if(grids[i + 1][r][c]!=0) {
-								stack.offer(grids[i+1][r][c]);
-								grids[i + 1][r][c]=0;
-							}
-						}
-						int r=H-1;
-						while(!stack.isEmpty()) {
-							grids[i + 1][r--][c]=stack.pollLast();
-						}
-					}
-						
-				}
-				max_removed=Math.max(removed, max_removed);
-			}
+			// simulate
+			int answer = total_brick-simulate(0);
+			
 			// output
-			sb.append("#").append(tc).append(" ").append(total_brick-max_removed).append("\n");
+			sb.append("#").append(tc).append(" ").append(answer).append("\n");
 		}
 		
 		System.out.println(sb.toString());
+	}
+	
+	static int simulate(int i) {
+		if (i == N) return 0;
+        
+        int max = 0;
+        for (int c = 0; c < W; c++) {
+            int top = 0;
+            while (top < H && grids[i][top][c] == 0) top++;
+            if (top >= H) continue; 
+            
+            for (int r = 0; r < H; r++) {
+                System.arraycopy(grids[i][r], 0, grids[i + 1][r], 0, W);
+            }
+            // shoot & fall
+            int removed = shoot(i + 1, top, c, 0);
+            fall(i + 1);
+            max = Math.max(max, removed + simulate(i + 1));
+        }
+        return max;
 	}
 	
 }
